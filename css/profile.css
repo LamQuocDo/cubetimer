@@ -1,0 +1,25 @@
+html, body{
+    font-family: monospace;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+.formInformation{
+    display: flex;
+    width: auto;
+    height: auto;
+    justify-content: center;
+    flex-direction: column;
+    border: solid 1px black;
+    border-radius: 15px;
+    padding: 20px;
+}
+.formInformation img{
+    width: 300px;
+    height: auto;
+    border-radius: 360px;
+}
+.formInformation h3{
+    font-size: 30px;
+}

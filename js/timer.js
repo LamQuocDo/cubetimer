@@ -35,7 +35,7 @@ function updateTimer() {
     if (elapsed > targetTime) {
       timerDisplay.style.color = 'red';
     } else {
-      timerDisplay.style.color = document.body.classList.contains('light') ? '#000' : '#fff';
+      // timerDisplay.style.color = document.body.classList.contains('light') ? '#000' : '#fff';
     }
   }
 }
