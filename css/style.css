@@ -1,0 +1,384 @@
+/* Reset & base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+  background-color: #111;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Container layout */
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Đăng nhập / đăng xuất */
+#logoutLink,
+#ls {
+  color: white;
+  text-decoration: none;
+  transition: 0.2s;
+}
+#logoutLink {
+  display: none;
+}
+#logoutLink:hover,
+#ls:hover {
+  color: rgb(123, 149, 234);
+}
+
+/* Sidebar chứa nav + history */
+.sidebar {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Nav */
+.nav {
+  width: 100%;
+  height: 150px;
+  background-color: #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  border-radius: 10px;
+  margin: 15px;
+  padding: 15px 10px;
+}
+.nav a {
+  font-size: 25px;
+}
+
+/* Switch chế độ */
+.theme-toggle {
+  display: flex;
+  justify-content: space-around;
+  margin-top: auto;
+  width: 100%;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px !important;
+  height: 26px !important;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555;
+  transition: 0.4s;
+  border-radius: 26px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #999;
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* History */
+.history {
+  width: 100%;
+  flex: 1;
+  background: #222;
+  margin: 15px;
+  padding: 15px 10px;
+  overflow-y: auto;
+  border-right: 1px solid #333;
+  border-radius: 10px;
+  /* margin: 0 15px 15px 15px; */
+}
+.history h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ddd;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+.history ul {
+  list-style: none;
+}
+.history li {
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid #333;
+  color: #ccc;
+}
+
+/* Main giữa */
+.main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scramble */
+.scramble {
+  position: absolute;
+  top: 30px;
+  text-align: center;
+  width: 100%;
+  font-size: 20px;
+  color: #aaa;
+  line-height: 1.4;
+  padding: 0 20px;
+}
+
+/* Timer */
+.timer {
+  font-size: 150px;
+  font-weight: bold;
+  color: white;
+  transition: color 0.3s ease;
+  user-select: none;
+}
+.ao-display {
+  font-size: 20px;
+  margin-top: 10px;
+  text-align: center;
+  color: #ccc;
+}
+
+/* Scramble settings */
+.scramble-settings {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+.scramble-settings select {
+  padding: 5px 10px;
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 99;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #222;
+  padding: 20px;
+  width: 300px;
+  border-radius: 12px;
+  color: #fff;
+  text-align: center;
+}
+#donate {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 9999;
+  transition: 0.3s;
+}
+
+#donate:hover {
+  color: rgb(123, 149, 234);
+  scale: 1.15;
+}
+
+#timer-display.over-target {
+  color: red !important;
+}
+#target-time-btn {
+  display: inline-block;
+  font-size: 15px;
+  text-decoration: none;
+  color: white;
+  margin: 10px;
+  border-radius: 15px;
+  background-color: #333;
+  transition: 0.3s;
+}
+#target-time-btn:hover {
+  color: #333;
+  background-color: white;
+}
+
+/* Giao diện sáng */
+body.light {
+  background-color: #eee;
+  color: #111;
+}
+body.light .nav {
+  background-color: #fff;
+}
+body.light .history {
+  background: #f0f0f0;
+  border-right: 1px solid #ccc;
+}
+body.light .history h3 {
+  color: #333;
+  border-bottom: 1px solid #bbb;
+}
+body.light .history li {
+  color: #444;
+  border-bottom: 1px solid #ccc;
+}
+body.light .scramble {
+  color: #333;
+}
+body.light .timer {
+  color: black;
+}
+body.light .ao-display {
+  color: #333;
+}
+body.light #ls,
+body.light #logoutLink {
+  color: black;
+}
+body.light #ls:hover,
+body.light #logoutLink:hover {
+  color: rgb(86, 122, 239);
+}
+body.light .scramble-settings label {
+  color: #111;
+}
+body.light .scramble-settings select {
+  background-color: #fff;
+  color: #111;
+  border: 1px solid #aaa;
+}
+body.light .menu-btn {
+  color: black;
+}
+body.light #target-time-btn {
+  color: white;
+  background-color: #333;
+}
+body.light #target-time-btn {
+  color: #333;
+  background-color: white;
+}
+body.light #donate {
+  color: black;
+}
+
+/* Nút menu ☰ */
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 30px;
+  background: none;
+  color: white;
+  border: none;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+/* Overlay làm mờ */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+body.light #target-time-btn {
+  color: black;
+}
+body.light #target-time-btn:hover {
+  background-color: #ccc;
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+
+  .main {
+    padding-top: 60px;
+  }
+
+  .scramble {
+    margin-top: 20px;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 70%;
+    max-width: 260px;
+    height: 100%;
+    flex-direction: column;
+    z-index: 1002;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .overlay.active {
+    display: block;
+  }
+
+  .nav {
+    border: none;
+    padding: 20px;
+  }
+
+  .history {
+    display: block;
+  }
+}

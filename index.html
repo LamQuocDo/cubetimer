@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cube Magic Timer</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Bên trái: Nav + History -->
+      <aside class="sidebar">
+        <div class="nav">
+          <a href="./pages/log&sig.html" id="ls">Đăng nhập</a>
+          <a href="#" id="logoutLink">Đăng xuất</a>
+          <!-- Thêm dòng này vào nav (gần chỗ dropdown chọn cube) -->
+          <button id="target-time-btn" class="target-btn">
+            Mode luyện tập
+          </button>
+
+          <!-- Popup nhập mục tiêu -->
+          <div id="target-time-modal" class="modal">
+            <div class="modal-content">
+              <label for="target-input">Thành tích mục tiêu (giây):</label>
+              <input type="number" id="target-input" step="0.01" min="0" />
+              <button id="set-target-btn">Xác nhận</button>
+            </div>
+          </div>
+
+          <div class="theme-toggle">
+            <h2 id="themeName">Sáng</h2>
+            <label class="switch">
+              <input type="checkbox" id="themeSwitch" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="history">
+          <h3>History</h3>
+          <ul id="historyList"></ul>
+        </div>
+      </aside>
+
+      <!-- Nút menu và overlay đặt trong container -->
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="overlay" id="overlay"></div>
+
+      <!-- chọn loại cube  -->
+      <main class="main">
+        <div class="scramble-settings">
+          <label for="cubeType">Chọn loại cube:</label>
+          <select id="cubeType">
+            <option value="2x2x2">2x2x2</option>
+            <option value="3x3x3" selected>3x3x3</option>
+            <option value="4x4x4">4x4x4</option>
+            <option value="5x5x5">5x5x5</option>
+          </select>
+        </div>
+
+        <div id="scramble" class="scramble">Scramble...</div>
+        <div id="timer" class="timer">0.00</div>
+      </main>
+    </div>
+
+    <a href="pages/donate.html" id="donate">Donate for me!</a>
+    <!-- Script -->
+    <script src="./js/scramble.js"></script>
+    <script src="./js/timer.js"></script>
+    <script src="./js/nav.js"></script>
+  </body>
+</html>
