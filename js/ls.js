@@ -7,7 +7,7 @@ const formTitle = document.getElementById("formTitle");
 let isLogin = true; // Trạng thái hiện tại: đang ở form đăng nhập hay đăng ký
 
 //  Nếu người dùng đã đăng nhập (đã có currentUser trong localStorage), tự động chuyển về trang chính
-if (localStorage.getItem('currentUser')){
+if (localStorage.getItem("currentUser")) {
   location.href = "../index.html";
 }
 
@@ -67,28 +67,24 @@ loginForm.addEventListener("submit", function (e) {
 
   //  Kiểm tra tài khoản có tồn tại trong localStorage không
   const checkAccountExist = localStorage.getItem(user.value);
-
-  if (!checkAccountExist){
-    user.classList.add("is-invalid");
-    alert('Tài khoản không tồn tại hoặc sai thông tin đăng nhập');
+  if (!checkAccountExist) {
+    alert("Tài khoản không tồn tại");
     valid = false;
   } else {
-    //  Nếu tồn tại, kiểm tra mật khẩu đúng không
-    if (checkAccountExist !== pass.value){
-      pass.classList.add('is-invalid');
-      alert('Mật khẩu không đúng');
+    const data = JSON.parse(checkAccountExist);
+    if (data.pass !== pass.value) {
+      alert("Mật khẩu không đúng");
       valid = false;
     }
   }
 
   //  Nếu hợp lệ hoàn toàn → đăng nhập thành công
   if (valid) {
-    localStorage.setItem('currentUser', user.value);       // Ghi tên người dùng hiện tại
-    localStorage.setItem("loggedIn", "true");              // Ghi trạng thái đã đăng nhập
-    window.location.href = "../index.html";                // Chuyển hướng về trang chính
+    localStorage.setItem("currentUser", user.value); // Ghi tên người dùng hiện tại
+    localStorage.setItem("loggedIn", "true"); // Ghi trạng thái đã đăng nhập
+    window.location.href = "../index.html"; // Chuyển hướng về trang chính
   }
 });
-
 
 // =======================
 //  Xử lý ĐĂNG KÝ
@@ -138,7 +134,10 @@ registerForm.addEventListener("submit", function (e) {
 
   //  Nếu hợp lệ, lưu tài khoản vào localStorage
   if (valid) {
-    localStorage.setItem(user.value, pass.value);  // Dùng username làm key, pass làm value
+    localStorage.setItem(
+      user.value,
+      JSON.stringify({ pass: pass.value, email: email.value, name: user.value})
+    ); // Dùng username làm key, pass làm value
     alert("Đăng ký thành công");
     toggle(e); // Chuyển sang form đăng nhập
   }

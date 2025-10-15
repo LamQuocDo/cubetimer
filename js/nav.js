@@ -71,3 +71,11 @@ themeSwitch.addEventListener('change', () => {
   document.body.classList.toggle('light', themeSwitch.checked);
   document.getElementById("themeName").innerText =  themeSwitch.checked ? "Sáng" : "Tối"; 
 });
+
+
+//lưu code API vào local storage để test localhost
+const params = new URLSearchParams(window.location.search)
+const code = params.get("code")
+if(code){
+  localStorage.setItem("WCAAPICODE", code)
+}
