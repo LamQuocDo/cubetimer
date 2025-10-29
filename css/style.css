@@ -61,6 +61,13 @@ body {
 }
 .nav a {
   font-size: 25px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav a:hover{
+  color: rgb(123, 149, 234);
 }
 
 /* Switch chế độ */
@@ -243,10 +250,10 @@ input:checked + .slider:before {
   border-radius: 15px;
   background-color: #333;
   transition: 0.3s;
+  border: none;
 }
 #target-time-btn:hover {
-  color: #333;
-  background-color: white;
+  cursor: pointer;
 }
 
 /* Giao diện sáng */
@@ -256,6 +263,9 @@ body.light {
 }
 body.light .nav {
   background-color: #fff;
+}
+body.light .nav a {
+  color: black;
 }
 body.light .history {
   background: #f0f0f0;
@@ -309,7 +319,7 @@ body.light #donate {
   color: black;
 }
 
-/* Nút menu ☰ */
+/* Nút menu */
 .menu-btn {
   display: none;
   position: fixed;
@@ -336,7 +346,7 @@ body.light #target-time-btn {
   color: black;
 }
 body.light #target-time-btn:hover {
-  background-color: #ccc;
+  cursor: pointer;
 }
 /* Responsive */
 @media (max-width: 768px) {

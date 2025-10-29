@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,21 +7,55 @@
     <link rel="stylesheet" href="../css/profile.css" />
   </head>
   <body>
-    <a href="../index.html">Trang chủ</a>
+    <div class="header">
+      <a href="../index.html">Trang chủ</a>
+      <div class="header-right">
+        <button id="themeToggle">Dark Mode</button>
+      </div>
+    </div>
+
     <div class="formInformation">
       <img
         src="https://inkythuatso.com/uploads/thumbnails/800/2023/03/10-anh-dai-dien-trang-inkythuatso-03-15-27-10.jpg"
         alt="avt"
       />
-      <h3 id="name">Tên tài khoản: </h3>
-      <h3 id="email">Địa chỉ Email: </h3>
-      <div class="rank">
-        <h3>ID WCA:</h3>
-        <input type="text" id="IDWCA" placeholder="Nhập ID WCA của bạn...">
-        <button id="sbm-btn">Tra</button>
+      <h3 id="name"></h3>
+      <div class="email">
+        <h3 id="email"></h3>
+        <button id="editEmailBtn">Chỉnh sửa email</button>
       </div>
+
+      <!-- Mật khẩu -->
+      <div class="password">
+        <h3 id="passDisplay">Mật khẩu: ********</h3>
+        <button id="showPassBtn">Hiện</button>
+        <button id="editPassBtn">Đổi mật khẩu</button>
+      </div>
+
       <h3 id="rankWCA"></h3>
     </div>
+
+    <!-- Modal đổi email -->
+    <div class="c-email">
+      <span>Nhập email mới:</span><br />
+      <input type="email" id="newEmail" placeholder="example@gmail.com" />
+      <button id="saveEmail">Lưu</button>
+    </div>
+
+    <!-- Modal đổi mật khẩu -->
+    <div class="c-pass">
+      <span>Nhập mật khẩu cũ:</span><br />
+      <input type="password" id="oldPass" placeholder="Mật khẩu hiện tại" />
+
+      <span>Nhập mật khẩu mới:</span><br />
+      <input type="password" id="newPass" placeholder="Mật khẩu mới" />
+
+      <span>Xác nhận mật khẩu mới:</span><br />
+      <input type="password" id="confirmPass" placeholder="Xác nhận mật khẩu" />
+
+      <button id="savePass">Lưu</button>
+    </div>
+
     <script src="../js/profile.js"></script>
   </body>
 </html>

@@ -1,83 +1,111 @@
 // ===========================
-//  Lớp sinh scramble (xáo trộn)
+//  Lớp sinh scramble (xáo trộn) - Chuẩn WCA
 // ===========================
 class Scramble {
   constructor(type = '3x3x3') {
-    //  Các nhóm mặt đối nhau (để tránh lặp lại liên tiếp)
     this.faceGroups = {
       U: ['U', 'D'], D: ['U', 'D'],
       L: ['L', 'R'], R: ['L', 'R'],
       F: ['F', 'B'], B: ['F', 'B']
     };
-
-    // Danh sách các mặt cube cơ bản
     this.faceList = ['U', 'D', 'L', 'R', 'F', 'B'];
-
-    // Loại cube hiện tại (mặc định là 3x3x3)
-    this.type = type;
+    this.type = type.toLowerCase();
+    this.wideFaces = ['u', 'd', 'l', 'r', 'f', 'b'];
+    this.sliceFaces = ['M', 'E', 'S'];
   }
 
-  //  Random 1 góc xoay: "" = 90°, "2" = 180°, "'" = 90° ngược
   getAngle() {
     const angles = ["", "2", "'"];
     return angles[Math.floor(Math.random() * angles.length)];
   }
 
-  //  Xác định số bước scramble theo loại cube
   getStepCount() {
-    const stepMap = {
-      "2x2x2": 10,
-      "3x3x3": 20,
-      "4x4x4": 41,
-      "5x5x5": 62
-    };
-    return stepMap[this.type] || 10; // Mặc định 10 nếu không có trong map
+    const map = { "2x2x2": 11, "3x3x3": 20, "4x4x4": 40, "5x5x5": 60 };
+    return map[this.type] || 20;
   }
 
-  // Tạo một chuỗi bước scramble ngẫu nhiên
-  randomSteps() {
-    const steps = [];
-    let lastFace = null; // Để tránh lặp lại mặt gần nhau (U → D, L → R...)
+  generateMove(lastFace = '') {
+    let face, angle, isWide = false, isSlice = false;
 
-    for (let i = 0; i < this.getStepCount(); i++) {
-      let newFace;
+    let available = this.faceList.filter(f =>
+      !lastFace || !this.faceGroups[lastFace].includes(f)
+    );
+    face = available[Math.floor(Math.random() * available.length)];
+    angle = this.getAngle();
 
-      // Lặp cho đến khi chọn được mặt không thuộc cùng nhóm với mặt trước
-      while (true) {
-        newFace = this.faceList[Math.floor(Math.random() * this.faceList.length)];
-        if (!lastFace || !this.faceGroups[lastFace].includes(newFace)) {
-          lastFace = newFace;
-          break;
-        }
+    if (this.type === '4x4x4' || this.type === '5x5x5') {
+      const rand = Math.random();
+      if (rand < 0.4) {
+        const idx = this.faceList.indexOf(face);
+        face = this.wideFaces[idx];
+        isWide = true;
+      } else if (rand < 0.6) {
+        face = this.sliceFaces[Math.floor(Math.random() * this.sliceFaces.length)];
+        isSlice = true;
       }
-
-      //  Thêm bước mới: ví dụ "F'", "U2", "R"
-      steps.push(newFace + this.getAngle());
     }
 
-    return steps.join(' '); // Ghép các bước thành 1 chuỗi
+    return { face, angle, isWide, isSlice };
+  }
+
+  generate() {
+    const moves = [];
+    let lastFace = '';
+    const count = this.getStepCount();
+
+    for (let i = 0; i < count; i++) {
+      const move = this.generateMove(lastFace);
+      const notation = move.face + move.angle;
+
+      if (!move.isWide && !move.isSlice) {
+        lastFace = move.face;
+      } else if (move.isWide) {
+        lastFace = move.face.toUpperCase();
+      }
+
+      moves.push(notation);
+    }
+
+    return moves.join(' ');
   }
 }
 
 
 // ===========================
-//  Hiển thị scramble lên giao diện
+//  KHI ĐỔI CUBE → LƯU LOẠI MỚI + RELOAD TRANG
 // ===========================
-function generateScramble() {
-  const type = document.getElementById('cubeType').value;     // Lấy loại cube đang chọn
-  const scramble = new Scramble(type);                        // Tạo scramble mới
-  document.getElementById('scramble').innerText = scramble.randomSteps(); // Ghi kết quả lên màn hình
+function handleCubeChange() {
+  const newType = document.getElementById('cubeType').value;
+  const currentType = localStorage.getItem('currentCubeType');
+
+  // Nếu đổi loại cube -> reload
+  if (currentType && currentType !== newType) {
+  }
+
+  // Lưu loại cube mới + reload
+  localStorage.setItem('currentCubeType', newType);
+  location.reload(); // LOAD LẠI TRANG → TỰ ĐỘNG TẠO SCRAMBLE MỚI
 }
 
 
 // ===========================
-// ⏲ Khi DOM load xong, tự động chạy scramble và cập nhật khi đổi loại cube
+//  DOM Ready: Tạo scramble + khôi phục loại cube
 // ===========================
-document.addEventListener('DOMContentLoaded', generateScramble);
-
 document.addEventListener('DOMContentLoaded', () => {
-  generateScramble(); // chạy ngay khi vào trang
+  const cubeSelect = document.getElementById('cubeType');
+  const savedType = localStorage.getItem('currentCubeType') || '3x3x3';
 
-  //  Khi người dùng chọn loại cube khác, thì tạo scramble mới tương ứng
-  document.getElementById('cubeType').addEventListener('change', generateScramble);
+  // Khôi phục loại cube
+  if (cubeSelect) {
+    cubeSelect.value = savedType;
+  }
+
+  // Tạo scramble đầu tiên
+  const scramble = new Scramble(savedType);
+  document.getElementById('scramble').innerText = scramble.generate();
+
+  // Khi đổi cube → reload trang
+  if (cubeSelect) {
+    cubeSelect.addEventListener('change', handleCubeChange);
+  }
 });

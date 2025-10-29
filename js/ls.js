@@ -6,7 +6,7 @@ const formTitle = document.getElementById("formTitle");
 
 let isLogin = true; // Trạng thái hiện tại: đang ở form đăng nhập hay đăng ký
 
-//  Nếu người dùng đã đăng nhập (đã có currentUser trong localStorage), tự động chuyển về trang chính
+// Nếu người dùng đã đăng nhập (đã có currentUser trong localStorage), tự động chuyển về trang chính
 if (localStorage.getItem("currentUser")) {
   location.href = "../index.html";
 }
@@ -47,9 +47,10 @@ loginForm.addEventListener("submit", function (e) {
 
   let user = document.getElementById("login_user");
   let pass = document.getElementById("login_password");
+  let wcaInput = document.getElementById("WCAID");
   let valid = true;
 
-  //  Kiểm tra độ dài username
+  // Kiểm tra độ dài username
   if (user.value.length < 6 || user.value.length > 18) {
     user.classList.add("is-invalid");
     valid = false;
@@ -57,7 +58,7 @@ loginForm.addEventListener("submit", function (e) {
     user.classList.remove("is-invalid");
   }
 
-  //  Kiểm tra độ dài password
+  // Kiểm tra độ dài password
   if (pass.value.length < 6 || pass.value.length > 18) {
     pass.classList.add("is-invalid");
     valid = false;
@@ -65,7 +66,7 @@ loginForm.addEventListener("submit", function (e) {
     pass.classList.remove("is-invalid");
   }
 
-  //  Kiểm tra tài khoản có tồn tại trong localStorage không
+  // Kiểm tra tài khoản có tồn tại trong localStorage không
   const checkAccountExist = localStorage.getItem(user.value);
   if (!checkAccountExist) {
     alert("Tài khoản không tồn tại");
@@ -78,10 +79,16 @@ loginForm.addEventListener("submit", function (e) {
     }
   }
 
-  //  Nếu hợp lệ hoàn toàn → đăng nhập thành công
+  // Nếu hợp lệ hoàn toàn → đăng nhập thành công
   if (valid) {
     localStorage.setItem("currentUser", user.value); // Ghi tên người dùng hiện tại
     localStorage.setItem("loggedIn", "true"); // Ghi trạng thái đã đăng nhập
+
+    // Nếu có ô nhập WCA ID thì lưu vào localStorage
+    if (wcaInput && wcaInput.value.trim() !== "") {
+      localStorage.setItem("WCA_ID", wcaInput.value.trim());
+    }
+
     window.location.href = "../index.html"; // Chuyển hướng về trang chính
   }
 });
@@ -99,7 +106,7 @@ registerForm.addEventListener("submit", function (e) {
 
   let valid = true;
 
-  //  Kiểm tra username hợp lệ
+  // Kiểm tra username hợp lệ
   if (user.value.length < 6 || user.value.length > 18) {
     user.classList.add("is-invalid");
     valid = false;
@@ -107,7 +114,7 @@ registerForm.addEventListener("submit", function (e) {
     user.classList.remove("is-invalid");
   }
 
-  //  Kiểm tra định dạng email bằng Regex
+  // Kiểm tra định dạng email bằng Regex
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
     email.classList.add("is-invalid");
@@ -116,7 +123,7 @@ registerForm.addEventListener("submit", function (e) {
     email.classList.remove("is-invalid");
   }
 
-  //  Kiểm tra mật khẩu hợp lệ
+  // Kiểm tra mật khẩu hợp lệ
   if (pass.value.length < 6 || pass.value.length > 18) {
     pass.classList.add("is-invalid");
     valid = false;
@@ -124,7 +131,7 @@ registerForm.addEventListener("submit", function (e) {
     pass.classList.remove("is-invalid");
   }
 
-  //  Kiểm tra xác nhận mật khẩu trùng khớp
+  // Kiểm tra xác nhận mật khẩu trùng khớp
   if (pass.value !== confirm.value) {
     confirm.classList.add("is-invalid");
     valid = false;
@@ -132,11 +139,11 @@ registerForm.addEventListener("submit", function (e) {
     confirm.classList.remove("is-invalid");
   }
 
-  //  Nếu hợp lệ, lưu tài khoản vào localStorage
+  // Nếu hợp lệ, lưu tài khoản vào localStorage
   if (valid) {
     localStorage.setItem(
       user.value,
-      JSON.stringify({ pass: pass.value, email: email.value, name: user.value})
+      JSON.stringify({ pass: pass.value, email: email.value, name: user.value })
     ); // Dùng username làm key, pass làm value
     alert("Đăng ký thành công");
     toggle(e); // Chuyển sang form đăng nhập
