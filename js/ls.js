@@ -114,7 +114,7 @@ registerForm.addEventListener("submit", function (e) {
     user.classList.remove("is-invalid");
   }
 
-  // Kiểm tra định dạng email bằng Regex
+  // Kiểm tra định dạng email
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
     email.classList.add("is-invalid");

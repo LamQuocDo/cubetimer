@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ========== Xử lý menu hamburger (hiện nav ở mobile) ==========
 document.addEventListener("DOMContentLoaded", () => {
-  const menuBtn = document.getElementById("menuBtn");          // Nút ☰
+  const menuBtn = document.getElementById("menuBtn");          // ham btn
   const sidebar = document.querySelector(".sidebar");          // Sidebar bên trái
   const overlay = document.getElementById("overlay");          // Lớp nền mờ
 
