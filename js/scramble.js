@@ -1,6 +1,5 @@
 // ===========================
-//  SCRAMBLE GENERATOR - WCA
-//  Author: bro code edition
+//  SCRAMBLE GENERATOR
 // ===========================
 
 class Scramble {
@@ -40,7 +39,7 @@ class Scramble {
   }
 
   // ===========================
-  //  CUBE NxN (2x2 → 7x7)
+  //  CUBE NxN (2x2 -> 7x7)
   // ===========================
   generateMove(lastFace = '') {
     let available = this.faceList.filter(f =>
