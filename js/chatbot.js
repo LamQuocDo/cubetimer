@@ -1,63 +1,74 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// 1. Cấu hình API (Thay mã của bạn vào đây)
 const API_KEY = "AIzaSyD6lB9sxTl3lLfig5rp_9pWvkPmb5ja3wY";
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const chatWindow = document.getElementById("chat-window");
 const userInput = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 
-// 2. Hàm hiển thị tin nhắn lên màn hình
 function appendMessage(role, text) {
   const msgDiv = document.createElement("div");
-  msgDiv.style.padding = "10px";
-  msgDiv.style.borderRadius = "8px";
-  msgDiv.style.maxWidth = "70%";
-  
+
+  // Thêm class chung và class riêng theo vai trò
+  msgDiv.classList.add("message");
   if (role === "user") {
-    msgDiv.style.alignSelf = "flex-end";
-    msgDiv.style.backgroundColor = "#e1f5fe";
-    msgDiv.innerText = `Bạn: ${text}`;
+    msgDiv.classList.add("user-msg");
+    msgDiv.innerText = text; // Người dùng không cần chữ "Bạn:" nữa cho đẹp
   } else {
-    msgDiv.style.alignSelf = "flex-start";
-    msgDiv.style.backgroundColor = "#f1f1f1";
-    msgDiv.innerText = `Gemini: ${text}`;
+    msgDiv.classList.add("ai-msg");
+    msgDiv.innerText = text;
   }
-  
+
   chatWindow.appendChild(msgDiv);
-  chatWindow.scrollTop = chatWindow.scrollHeight; // Tự động cuộn xuống dưới
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// 3. Hàm xử lý gửi tin nhắn
 async function handleChat() {
   const prompt = userInput.value.trim();
   if (!prompt) return;
 
-  // Hiển thị tin nhắn của người dùng
   appendMessage("user", prompt);
-  userInput.value = ""; // Xóa ô nhập
+  userInput.value = "";
 
-  // Hiển thị trạng thái "Đang trả lời..."
-  appendMessage("bot", "...");
+  const loadingDiv = document.createElement("div");
+  loadingDiv.classList.add("loading"); // Thêm class này
+  loadingDiv.innerText = "Gemini đang suy nghĩ...";
+  chatWindow.appendChild(loadingDiv);
+  chatWindow.appendChild(loadingDiv);
 
   try {
-    // Gọi API Gemini
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    // --- ĐỔI SANG GEMINI 2.5 FLASH ---
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
-    // Xóa dòng "..." cuối cùng và thay bằng câu trả lời thật
-    chatWindow.lastChild.innerText = `Gemini: ${text}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
+    });
+
+    const data = await response.json();
+    loadingDiv.remove();
+
+    if (data.error) {
+      throw new Error(`[${data.error.code}] ${data.error.message}`);
+    }
+
+    if (data.candidates && data.candidates[0].content) {
+      const botText = data.candidates[0].content.parts[0].text;
+      appendMessage("bot", botText);
+    } else {
+      appendMessage("bot", "AI không trả về nội dung, thử lại nhé bro!");
+    }
   } catch (error) {
-    console.error("Lỗi API:", error);
-    chatWindow.lastChild.innerText = "Gemini: Xin lỗi, đã có lỗi xảy ra.";
+    console.error("Lỗi chi tiết:", error);
+    loadingDiv.innerText = "Lỗi: " + error.message;
   }
 }
 
-// 4. Lắng nghe sự kiện click nút hoặc nhấn Enter
+// Bắt sự kiện click
 sendBtn.addEventListener("click", handleChat);
+
+// Bắt sự kiện Enter
 userInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") handleChat();
 });
