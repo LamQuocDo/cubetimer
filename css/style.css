@@ -237,6 +237,27 @@ input:checked + .slider:before {
   color: rgb(123, 149, 234);
   scale: 1.15;
 }
+#chatbot {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 9999;
+  transition: 0.3s;
+  margin: 20px;
+}
+
+#chatbot:hover {
+  color: rgb(123, 149, 234);
+  scale: 1.15;
+}
+.menu{
+  display: flex;
+  flex-direction: column;
+
+}
 
 #timer-display.over-target {
   color: red !important;
