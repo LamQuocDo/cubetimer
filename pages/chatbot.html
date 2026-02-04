@@ -1,42 +1,20 @@
 <!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; 
-               script-src 'self' https://esm.run https://cdn.jsdelivr.net 'unsafe-inline'; 
-               style-src 'self' 'unsafe-inline'; 
-               connect-src 'self' https://generativelanguage.googleapis.com https://cdn.jsdelivr.net;"
-    />
-    <link rel="stylesheet" href="../css/chatbot.css">
-    <title>Gemini Chatbot</title>
-  </head>
-  <body>
-    <div
-      id="chat-window"
-      style="
-        border: 1px solid #ddd;
-        padding: 15px;
-        height: 400px;
-        overflow-y: scroll;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      "
-    ></div>
-
-    <div style="margin-top: 10px">
-      <input
-        type="text"
-        id="user-input"
-        placeholder="Hỏi Gemini điều gì đó..."
-        style="width: 70%; padding: 8px"
-      />
-      <button id="send-btn" style="padding: 8px 15px">Gửi</button>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body>
+  <a href="../index.html">Trang chủ</a>
+  <div class="main-window">
+    <div id="chat-window"></div>
+    <div class="btn">
+      <input type="text" id="user-input">
+      <button id="send-btn">Gửi</button>
     </div>
-
-    <script type="module" src="../js/chatbot.js"></script>
-  </body>
+  </div>
+  <script type="module" src="../js/chatbot.js"></script>
+</body>
 </html>

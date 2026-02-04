@@ -1,17 +1,30 @@
-// Đồng bộ theme với index.html
-document.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme") || "light";
+// profile.js
+import { db } from "./firebase_config.js";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+// =======================
+//  THEME (giữ logic cũ)
+// =======================
+document.addEventListener("DOMContentLoaded", async () => {
+  const themeRef = doc(db, "settings", "theme");
+  const snap = await getDoc(themeRef);
+  const savedTheme = snap.exists() ? snap.data().value : "light";
+
   document.documentElement.className = savedTheme;
   updateThemeButton(savedTheme);
 
-  // Xử lý nút đổi theme
   const themeToggle = document.getElementById("themeToggle");
   if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
+    themeToggle.addEventListener("click", async () => {
       const currentTheme = document.documentElement.className;
       const newTheme = currentTheme === "light" ? "dark" : "light";
       document.documentElement.className = newTheme;
-      localStorage.setItem("theme", newTheme);
+      await setDoc(themeRef, { value: newTheme });
       updateThemeButton(newTheme);
     });
   }
@@ -24,54 +37,45 @@ function updateThemeButton(theme) {
   }
 }
 
-// === Giữ nguyên toàn bộ code cũ bên dưới ===
+// =======================
+//  LOAD USER SESSION
+// =======================
+const sessionRef = doc(db, "session", "current");
+const sessionSnap = await getDoc(sessionRef);
 
-let username = localStorage.getItem("currentUser");
-
-if (!username) {
-  const keys = Object.keys(localStorage);
-  const userKeys = keys.filter(key => {
-    try {
-      const data = JSON.parse(localStorage.getItem(key));
-      return data && data.name && data.email && data.pass;
-    } catch {
-      return false;
-    }
-  });
-
-  if (userKeys.length === 1) {
-    username = userKeys[0];
-    localStorage.setItem("currentUser", username);
-  } else if (userKeys.length > 1) {
-    alert("Có nhiều tài khoản! Vui lòng đăng nhập lại.");
-    window.location.href = "../index.html";
-  }
-}
-
-const user = username ? JSON.parse(localStorage.getItem(username)) : null;
-const title = document.getElementById("name");
-const showEmail = document.getElementById("email");
-const passDisplay = document.getElementById("passDisplay");
-
-if (username && user) {
-  title.textContent = `Tên tài khoản: ${username}`;
-  showEmail.textContent = `Email: ${user.email}`;
-  passDisplay.textContent = "Mật khẩu: ********"; // Ẩn mật khẩu
-} else {
+if (!sessionSnap.exists() || !sessionSnap.data().user) {
   alert("Bạn chưa đăng nhập!");
   window.location.href = "../index.html";
 }
 
-// --- Backdrop chung cho tất cả modal ---
+const username = sessionSnap.data().user;
+const userRef = doc(db, "users", username);
+const userSnap = await getDoc(userRef);
+
+if (!userSnap.exists()) {
+  alert("Không tìm thấy tài khoản!");
+  window.location.href = "../index.html";
+}
+
+const user = userSnap.data();
+
+// =======================
+//  HIỂN THỊ THÔNG TIN
+// =======================
+const title = document.getElementById("name");
+const showEmail = document.getElementById("email");
+const passDisplay = document.getElementById("passDisplay");
+
+title.textContent = `Tên tài khoản: ${username}`;
+showEmail.textContent = `Email: ${user.email}`;
+passDisplay.textContent = "Mật khẩu: ********";
+
+// =======================
+//  BACKDROP
+// =======================
 const backdrop = document.createElement("div");
 backdrop.className = "modal-backdrop";
 document.body.appendChild(backdrop);
-
-// --- Modal đổi email ---
-const editEmailBtn = document.getElementById("editEmailBtn");
-const cEmailModal = document.querySelector(".c-email");
-const saveEmailBtn = document.getElementById("saveEmail");
-const newEmailInput = document.getElementById("newEmail");
 
 function openModal(modal) {
   modal.classList.add("show");
@@ -83,6 +87,14 @@ function closeModal(modal) {
   backdrop.classList.remove("show");
 }
 
+// =======================
+//  EDIT EMAIL
+// =======================
+const editEmailBtn = document.getElementById("editEmailBtn");
+const cEmailModal = document.querySelector(".c-email");
+const saveEmailBtn = document.getElementById("saveEmail");
+const newEmailInput = document.getElementById("newEmail");
+
 editEmailBtn.addEventListener("click", (e) => {
   e.preventDefault();
   openModal(cEmailModal);
@@ -90,20 +102,7 @@ editEmailBtn.addEventListener("click", (e) => {
   newEmailInput.select();
 });
 
-backdrop.addEventListener("click", () => {
-  closeModal(cEmailModal);
-  closeModal(cPassModal);
-});
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    closeModal(cEmailModal);
-    closeModal(cPassModal);
-  }
-});
-
-// --- Cập nhật email ---
-saveEmailBtn.addEventListener("click", () => {
+saveEmailBtn.addEventListener("click", async () => {
   const newEmail = newEmailInput.value.trim();
 
   if (!newEmail) {
@@ -115,15 +114,16 @@ saveEmailBtn.addEventListener("click", () => {
     return;
   }
 
-  user.email = newEmail;
-  localStorage.setItem(username, JSON.stringify(user));
+  await updateDoc(userRef, { email: newEmail });
   showEmail.textContent = `Email: ${newEmail}`;
   closeModal(cEmailModal);
   newEmailInput.value = "";
   alert("Đã cập nhật email thành công!");
 });
 
-// --- Show/Hide Password ---
+// =======================
+//  SHOW / HIDE PASSWORD
+// =======================
 const showPassBtn = document.getElementById("showPassBtn");
 let isPassVisible = false;
 
@@ -138,7 +138,9 @@ showPassBtn.addEventListener("click", () => {
   isPassVisible = !isPassVisible;
 });
 
-/// --- Modal đổi mật khẩu ---
+// =======================
+//  CHANGE PASSWORD
+// =======================
 const editPassBtn = document.getElementById("editPassBtn");
 const cPassModal = document.querySelector(".c-pass");
 const savePassBtn = document.getElementById("savePass");
@@ -152,18 +154,16 @@ editPassBtn.addEventListener("click", (e) => {
   oldPassInput.focus();
 });
 
-savePassBtn.addEventListener("click", () => {
+savePassBtn.addEventListener("click", async () => {
   const oldPass = oldPassInput.value;
   const newPass = newPassInput.value;
   const confirmPass = confirmPassInput.value;
 
-  // Kiểm tra nhập đủ
   if (!oldPass || !newPass || !confirmPass) {
     alert("Vui lòng nhập đầy đủ các trường!");
     return;
   }
 
-  // Kiểm tra mật khẩu cũ
   if (oldPass !== user.pass) {
     alert("Mật khẩu cũ không đúng!");
     oldPassInput.focus();
@@ -171,28 +171,23 @@ savePassBtn.addEventListener("click", () => {
     return;
   }
 
-  // Kiểm tra độ dài mật khẩu mới
   if (newPass.length < 6) {
     alert("Mật khẩu mới phải ít nhất 6 ký tự!");
     return;
   }
 
-  // Kiểm tra xác nhận
   if (newPass !== confirmPass) {
     alert("Mật khẩu xác nhận không khớp!");
     return;
   }
 
-  // Cập nhật thành công
+  await updateDoc(userRef, { pass: newPass });
   user.pass = newPass;
-  localStorage.setItem(username, JSON.stringify(user));
 
-  // Reset hiển thị
   passDisplay.textContent = "Mật khẩu: ********";
   isPassVisible = false;
   showPassBtn.textContent = "Hiện";
 
-  // Đóng modal + xóa input
   closeModal(cPassModal);
   oldPassInput.value = "";
   newPassInput.value = "";
@@ -201,19 +196,39 @@ savePassBtn.addEventListener("click", () => {
   alert("Đổi mật khẩu thành công!");
 });
 
-// --- API rank ---
+// =======================
+//  BACKDROP + ESC
+// =======================
+backdrop.addEventListener("click", () => {
+  closeModal(cEmailModal);
+  closeModal(cPassModal);
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeModal(cEmailModal);
+    closeModal(cPassModal);
+  }
+});
+
+// =======================
+//  WCA RANK (giữ logic)
+// =======================
 document.addEventListener("DOMContentLoaded", async () => {
-  const id = localStorage.getItem("WCA_ID");
+  const sessionSnap = await getDoc(sessionRef);
+  const id = sessionSnap.exists() ? sessionSnap.data().WCA_ID : null;
 
   if (!id) {
-    document.getElementById("rankWCA").textContent = "Xếp hạng 3x3 avg: Chưa liên kết WCA ID";
+    document.getElementById("rankWCA").textContent =
+      "Xếp hạng 3x3 avg: Chưa liên kết WCA ID";
     return;
   }
 
   try {
     const res = await fetch(`https://api.worldcubeassociation.org/persons/${id}`);
     if (!res.ok) {
-      document.getElementById("rankWCA").textContent = "Xếp hạng 3x3 avg: Không tìm thấy";
+      document.getElementById("rankWCA").textContent =
+        "Xếp hạng 3x3 avg: Không tìm thấy";
       return;
     }
 
@@ -225,10 +240,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       rank = records["333"].average.world_rank;
     }
 
-    document.getElementById("rankWCA").textContent = `Xếp hạng 3x3 avg: #${rank}`;
+    document.getElementById("rankWCA").textContent =
+      `Xếp hạng 3x3 avg: #${rank}`;
   } catch (err) {
     console.error("Lỗi API WCA:", err);
-    document.getElementById("rankWCA").textContent = "Lỗi khi lấy dữ liệu từ API!";
+    document.getElementById("rankWCA").textContent =
+      "Lỗi khi lấy dữ liệu từ API!";
   }
 });
-

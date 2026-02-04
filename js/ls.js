@@ -1,17 +1,36 @@
-// Lấy các phần tử của form đăng nhập / đăng ký
+// ls.js
+import { db } from "./firebase_config.js";
+import {
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+// =======================
+//  DOM ELEMENTS
+// =======================
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 const toggleText = document.getElementById("toggleText");
 const formTitle = document.getElementById("formTitle");
 
-let isLogin = true; // Trạng thái hiện tại: đang ở form đăng nhập hay đăng ký
+let isLogin = true;
 
-// Nếu người dùng đã đăng nhập (đã có currentUser trong localStorage), tự động chuyển về trang chính
-if (localStorage.getItem("currentUser")) {
-  location.href = "../index.html";
-}
+// =======================
+//  CHECK LOGIN STATE
+// =======================
+const sessionRef = doc(db, "session", "current");
 
-// Hàm cập nhật giao diện khi chuyển giữa đăng nhập và đăng ký
+(async () => {
+  const snap = await getDoc(sessionRef);
+  if (snap.exists() && snap.data().user) {
+    location.href = "../index.html";
+  }
+})();
+
+// =======================
+//  UI TOGGLE
+// =======================
 function updateForm() {
   if (isLogin) {
     loginForm.classList.add("active");
@@ -25,127 +44,116 @@ function updateForm() {
     toggleText.innerHTML = `Đã có tài khoản? <a href="#" id="toggleLink">Đăng nhập</a>`;
   }
 
-  // Cập nhật lại sự kiện click cho liên kết chuyển đổi form
   document.getElementById("toggleLink").addEventListener("click", toggle);
 }
 
-// Hàm chuyển đổi giữa form đăng nhập và đăng ký
 function toggle(e) {
   e.preventDefault();
   isLogin = !isLogin;
   updateForm();
 }
 
-// Gắn sự kiện ban đầu cho liên kết chuyển đổi form
 document.getElementById("toggleLink").addEventListener("click", toggle);
 
 // =======================
-//  Xử lý ĐĂNG NHẬP
+//  LOGIN
 // =======================
-loginForm.addEventListener("submit", function (e) {
+loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  let user = document.getElementById("login_user");
-  let pass = document.getElementById("login_password");
-  let wcaInput = document.getElementById("WCAID");
+  const user = document.getElementById("login_user");
+  const pass = document.getElementById("login_password");
+  const wcaInput = document.getElementById("WCAID");
+
   let valid = true;
 
-  // Kiểm tra độ dài username
   if (user.value.length < 6 || user.value.length > 18) {
     user.classList.add("is-invalid");
     valid = false;
-  } else {
-    user.classList.remove("is-invalid");
-  }
+  } else user.classList.remove("is-invalid");
 
-  // Kiểm tra độ dài password
   if (pass.value.length < 6 || pass.value.length > 18) {
     pass.classList.add("is-invalid");
     valid = false;
-  } else {
-    pass.classList.remove("is-invalid");
-  }
+  } else pass.classList.remove("is-invalid");
 
-  // Kiểm tra tài khoản có tồn tại trong localStorage không
-  const checkAccountExist = localStorage.getItem(user.value);
-  if (!checkAccountExist) {
+  const userRef = doc(db, "users", user.value);
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) {
     alert("Tài khoản không tồn tại");
     valid = false;
   } else {
-    const data = JSON.parse(checkAccountExist);
+    const data = snap.data();
     if (data.pass !== pass.value) {
       alert("Mật khẩu không đúng");
       valid = false;
     }
   }
 
-  // Nếu hợp lệ hoàn toàn → đăng nhập thành công
   if (valid) {
-    localStorage.setItem("currentUser", user.value); // Ghi tên người dùng hiện tại
-    localStorage.setItem("loggedIn", "true"); // Ghi trạng thái đã đăng nhập
+    await setDoc(sessionRef, {
+      user: user.value,
+      loggedIn: true,
+      WCA_ID: wcaInput && wcaInput.value.trim() !== ""
+        ? wcaInput.value.trim()
+        : null
+    });
 
-    // Nếu có ô nhập WCA ID thì lưu vào localStorage
-    if (wcaInput && wcaInput.value.trim() !== "") {
-      localStorage.setItem("WCA_ID", wcaInput.value.trim());
-    }
-
-    window.location.href = "../index.html"; // Chuyển hướng về trang chính
+    window.location.href = "../index.html";
   }
 });
 
 // =======================
-//  Xử lý ĐĂNG KÝ
+//  REGISTER
 // =======================
-registerForm.addEventListener("submit", function (e) {
+registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  let user = document.getElementById("reg_username");
-  let email = document.getElementById("reg_email");
-  let pass = document.getElementById("reg_password");
-  let confirm = document.getElementById("reg_confirm");
+  const user = document.getElementById("reg_username");
+  const email = document.getElementById("reg_email");
+  const pass = document.getElementById("reg_password");
+  const confirm = document.getElementById("reg_confirm");
 
   let valid = true;
 
-  // Kiểm tra username hợp lệ
   if (user.value.length < 6 || user.value.length > 18) {
     user.classList.add("is-invalid");
     valid = false;
-  } else {
-    user.classList.remove("is-invalid");
-  }
+  } else user.classList.remove("is-invalid");
 
-  // Kiểm tra định dạng email
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
     email.classList.add("is-invalid");
     valid = false;
-  } else {
-    email.classList.remove("is-invalid");
-  }
+  } else email.classList.remove("is-invalid");
 
-  // Kiểm tra mật khẩu hợp lệ
   if (pass.value.length < 6 || pass.value.length > 18) {
     pass.classList.add("is-invalid");
     valid = false;
-  } else {
-    pass.classList.remove("is-invalid");
-  }
+  } else pass.classList.remove("is-invalid");
 
-  // Kiểm tra xác nhận mật khẩu trùng khớp
   if (pass.value !== confirm.value) {
     confirm.classList.add("is-invalid");
     valid = false;
-  } else {
-    confirm.classList.remove("is-invalid");
+  } else confirm.classList.remove("is-invalid");
+
+  const userRef = doc(db, "users", user.value);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    alert("Tài khoản đã tồn tại");
+    return;
   }
 
-  // Nếu hợp lệ, lưu tài khoản vào localStorage
   if (valid) {
-    localStorage.setItem(
-      user.value,
-      JSON.stringify({ pass: pass.value, email: email.value, name: user.value })
-    ); // Dùng username làm key, pass làm value
+    await setDoc(userRef, {
+      name: user.value,
+      email: email.value,
+      pass: pass.value
+    });
+
     alert("Đăng ký thành công");
-    toggle(e); // Chuyển sang form đăng nhập
+    toggle(e);
   }
 });

@@ -275,6 +275,7 @@ input:checked + .slider:before {
 }
 #target-time-btn:hover {
   cursor: pointer;
+  color: rgb(123, 149, 234);
 }
 
 /* Giao diện sáng */

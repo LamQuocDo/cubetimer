@@ -1,130 +1,97 @@
-/* CSS RESET & GOOGLE FONT */
-
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+*{
+    font-family: monospace;
 }
-
-/* KHUNG CHAT CHÍNH */
-.chat-container {
-    width: 95%;
-    max-width: 450px;
-    height: 85vh;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+html, body{
+    background-color: #121212;
+}
+.main-window{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 95vh;
+    gap: 20px;
+}
+#chat-window{
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-}
-
-/* THANH TIÊU ĐỀ */
-.chat-header {
-    padding: 16px 20px;
-    background: #0084ff;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-/* KHUNG HIỂN THỊ TIN NHẮN */
-#chat-window {
-    flex: 1;
-    padding: 20px;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: #ffffff;
-    scroll-behavior: smooth;
-}
-
-/* STYLE TIN NHẮN CHUNG */
-.message {
-    max-width: 75%;
-    padding: 10px 14px;
-    border-radius: 18px;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    position: relative;
-    animation: messageSlide 0.3s ease-out;
-}
-
-@keyframes messageSlide {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* TIN NHẮN NGƯỜI DÙNG */
-.user-msg {
-    align-self: flex-end;
-    background-color: #0084ff;
-    color: white;
-    border-bottom-right-radius: 4px;
-}
-
-/* TIN NHẮN GEMINI */
-.ai-msg {
-    align-self: flex-start;
-    background-color: #e4e6eb;
-    color: #050505;
-    border-bottom-left-radius: 4px;
-}
-
-/* KHUNG NHẬP LIỆU */
-.input-area {
+    border: solid #8e8e8e 1px;
+    background-color: #333;
+    color: #fff;
+    height: 70vh;
+    width: 1400px;
+    margin-top: 40px;
+    border-radius: 15px;
     padding: 15px;
-    border-top: 1px solid #eee;
+}
+.btn{
     display: flex;
-    gap: 8px;
-    background: white;
+    flex-direction: row;
+    gap: 20px;
 }
-
-input {
-    flex: 1;
-    padding: 10px 16px;
-    border: 1px solid #e4e6eb;
-    border-radius: 20px;
-    outline: none;
-    background: #f0f2f5;
-    transition: all 0.2s;
-}
-
-input:focus {
-    background: white;
-    border-color: #0084ff;
-}
-
-button {
-    background: transparent;
-    color: #0084ff;
+#user-input{
+    display: flex;
+    width: 1100px;
+    height: 30px;
+    border-radius: 15px;
+    padding-left: 15px;
+    font-size: large;
+    background-color: #333;
+    color: #fff;
     border: none;
-    padding: 0 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s;
+    box-shadow: #555 0px 3px 0px 0px;
 }
-
-button:hover {
-    transform: scale(1.1);
-}
-
-/* HIỆU ỨNG ĐANG SUY NGHĨ */
-.loading {
-    font-size: 0.8rem;
-    color: #65676b;
-    margin-left: 10px;
+#send-btn{
     display: flex;
+    width: 60px;
+    height: 35px;
+    border-radius: 15px;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    box-shadow: #444 0px 1px 0px 0px;
+    cursor: pointer;
+    transition: all ease-in-out 0.3s;
+}
+#send-btn:hover{
+    scale: 1.05;
+    background-color: #444;
+}
+.message {
+  max-width: 70%;
+  padding: 10px 14px;
+  margin: 6px 0;
+  border-radius: 12px;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* Tin nhắn người dùng */
+.user-msg {
+  align-self: flex-end;
+  background-color: #4a90e2;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+/* Tin nhắn AI */
+.ai-msg {
+  align-self: flex-start;
+  background-color: #555;
+  color: #fff;
+  border-bottom-left-radius: 4px;
+}
+a{
+    display: flex;
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+    margin:auto;
+    transition:  ease-in-out 0.3s;
+}
+a:hover{
+    scale: 1.01;
+    color: rgb(123, 149, 234);
 }

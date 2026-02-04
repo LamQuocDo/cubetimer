@@ -1,81 +1,89 @@
-// ========== Xử lý login/logout ==========
-window.addEventListener("DOMContentLoaded", () => {
-  const loginLink = document.getElementById("ls");           // Nút Đăng nhập
-  const logoutLink = document.getElementById("logoutLink");  // Nút Đăng xuất
+// nav.js
+import { db } from "./firebase_config.js";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  const isLoggedIn = localStorage.getItem("currentUser");    // Kiểm tra trạng thái người dùng
+// ========== LOGIN / LOGOUT ==========
+window.addEventListener("DOMContentLoaded", async () => {
+  const loginLink = document.getElementById("ls");
+  const logoutLink = document.getElementById("logoutLink");
 
-  //  Nếu đã đăng nhập → ẩn nút "Đăng nhập", hiện "Đăng xuất"
+  const sessionRef = doc(db, "session", "current");
+  const snap = await getDoc(sessionRef);
+  const isLoggedIn = snap.exists() && snap.data().user;
+
   if (isLoggedIn) {
     loginLink.style.display = "none";
     logoutLink.style.display = "inline";
   } else {
-    //  Nếu chưa đăng nhập → hiện "Đăng nhập", ẩn "Đăng xuất"
     loginLink.style.display = "inline";
     logoutLink.style.display = "none";
   }
 
-  //  Khi bấm "Đăng xuất" → xóa trạng thái đăng nhập + quay về trang chính
-  logoutLink.addEventListener("click", function (e) {
+  // Đăng xuất
+  logoutLink.addEventListener("click", async (e) => {
     e.preventDefault();
-    localStorage.setItem("loggedIn", "false");
-    localStorage.removeItem("currentUser");
+
+    await setDoc(sessionRef, {
+      user: null,
+      loggedIn: false,
+      WCA_ID: null
+    });
+
     window.location.href = "index.html";
   });
 });
 
-
-// ========== Xử lý menu hamburger (hiện nav ở mobile) ==========
+// ========== MENU HAMBURGER ==========
 document.addEventListener("DOMContentLoaded", () => {
-  const menuBtn = document.getElementById("menuBtn");          // ham btn
-  const sidebar = document.querySelector(".sidebar");          // Sidebar bên trái
-  const overlay = document.getElementById("overlay");          // Lớp nền mờ
+  const menuBtn = document.getElementById("menuBtn");
+  const sidebar = document.querySelector(".sidebar");
+  const overlay = document.getElementById("overlay");
 
-  //  Bấm menu → hiện sidebar + overlay
   menuBtn.addEventListener("click", () => {
     sidebar.classList.add("active");
     overlay.classList.add("active");
   });
 
-  //  Bấm overlay → đóng sidebar
   overlay.addEventListener("click", () => {
     sidebar.classList.remove("active");
     overlay.classList.remove("active");
   });
 });
 
-
-// ========== Xử lý popup nhập "thành tích mục tiêu" ==========
+// ========== TARGET TIME ==========
 document.getElementById("target-time-btn").addEventListener("click", () => {
-  //  Bấm nút "Mode luyện tập" → hiện khung nhập thành tích
   document.getElementById("target-time-modal").style.display = "block";
 });
 
-document.getElementById("set-target-btn").addEventListener("click", () => {
-  //  Lấy giá trị người dùng nhập
+document.getElementById("set-target-btn").addEventListener("click", async () => {
   const value = parseFloat(document.getElementById("target-input").value);
 
-  //  Nếu nhập hợp lệ → lưu vào localStorage
   if (!isNaN(value)) {
-    localStorage.setItem("targetTime", value);
+    const settingRef = doc(db, "settings", "targetTime");
+    await setDoc(settingRef, { value });
   }
 
-  // Ẩn popup sau khi nhập
   document.getElementById("target-time-modal").style.display = "none";
 });
 
-
-// ========== Chuyển giao diện sáng/tối ==========
-const themeSwitch = document.getElementById('themeSwitch');
-themeSwitch.addEventListener('change', () => {
-  document.body.classList.toggle('light', themeSwitch.checked);
-  document.getElementById("themeName").innerText =  themeSwitch.checked ? "Sáng" : "Tối"; 
+// ========== THEME SWITCH ==========
+const themeSwitch = document.getElementById("themeSwitch");
+themeSwitch.addEventListener("change", () => {
+  document.body.classList.toggle("light", themeSwitch.checked);
+  document.getElementById("themeName").innerText =
+    themeSwitch.checked ? "Sáng" : "Tối";
 });
 
+// ========== WCA API CODE (giữ nguyên hành vi) ==========
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
 
-//lưu code API vào local storage để test localhost
-const params = new URLSearchParams(window.location.search)
-const code = params.get("code")
-if(code){
-  localStorage.setItem("WCAAPICODE", code)
+if (code) {
+  const sessionRef = doc(db, "session", "current");
+  updateDoc(sessionRef, { WCAAPICODE: code });
 }
